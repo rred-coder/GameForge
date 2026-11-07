@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameForge | Game Library</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-layout" id="appLayout">
+
+        <aside class="sidebar">
+            <a href="#" class="logo" onclick="showView('library'); return false;">
+                <span class="logo-icon">G</span>
+                GAME<span>FORGE</span>
+            </a>
+
+            <p class="menu-label">MENU</p>
+
+            <button class="nav-item active" data-view="library"
+                onclick="showView('library')">
+                <span>▦</span> Game Library
+                <span class="nav-count" id="gameCount">20</span>
+            </button>
+
+            <button class="nav-item" data-view="favorites"
+                onclick="showView('favorites')">
+                <span>♡</span> Favorites
+                <span class="nav-count" id="favoriteCount">0</span>
+            </button>
+
+            <button class="nav-item" data-view="recent"
+                onclick="showView('recent')">
+                <span>◷</span> Recently Played
+            </button>
+
+            <div class="sidebar-bottom">
+                <div class="profile-box">
+                    <div class="profile-icon">GF</div>
+                    <div>
+                        <strong>GameForge</strong>
+                        <small>Personal game library</small>
+                    </div>
+                </div>
+                <p class="sidebar-footer">YOUR GAMES. YOUR SPACE.</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+
+                <div class="breadcrumb">
+                    LIBRARY <span>/</span>
+                    <strong id="breadcrumb">ALL GAMES</strong>
+                </div>
+
+                <div class="user-profile">
+                    <span class="online-dot"></span>
+                    MY COLLECTION
+                    <div class="avatar">GF</div>
+                </div>
+            </header>
+
+            <section class="welcome">
+                <div>
+                    <p class="eyebrow">YOUR GAMING SPACE</p>
+                    <h1 id="pageTitle">Your <span>Library.</span></h1>
+                    <p class="welcome-text" id="pageDescription">
+                        Every adventure starts somewhere. Pick your next game.
+                    </p>
+                </div>
+
+                <div class="library-stat">
+                    <strong id="visibleCount">20</strong>
+                    <span>GAMES IN LIBRARY</span>
+                </div>
+            </section>
+
+            <section class="toolbar">
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input type="search" id="searchInput"
+                        placeholder="Search your games...">
+                </div>
+
+                <select id="sortSelect" aria-label="Sort games">
+                    <option value="default">My Order</option>
+                    <option value="title">Title A–Z</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="hours">Most Played</option>
+                </select>
+            </section>
+
+            <section class="library-section">
+                <div class="section-heading">
+                    <div>
+                        <h2 id="sectionTitle">All Games</h2>
+                        <p id="sectionDescription">Your complete collection</p>
+                    </div>
+                    <span class="grid-label">▦ GRID VIEW</span>
+                </div>
+
+                <div class="game-grid" id="gameGrid"></div>
+
+                <div class="empty-state hidden" id="emptyState">
+                    <h2>No games found</h2>
+                    <p>Try another search or choose a different section.</p>
+                    <button class="primary-button" onclick="resetLibrary()">
+                        Show All Games
+                    </button>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <span>◆ GAMEFORGE</span>
+                <span>BUILT FOR YOUR GAMING COLLECTION</span>
+            </footer>
+        </main>
+    </div>
+
+    <!-- QUICK-VIEW POPUP -->
+    <div class="modal-overlay hidden" id="gameModal"
+        role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+        onclick="closeModalOnBackdrop(event)">
+
+        <div class="modal">
+            <button class="close-button" onclick="closeModal()">×</button>
+
+            <div class="modal-image" id="modalImage">
+                <span class="modal-category" id="modalCategory"></span>
+            </div>
+
+            <div class="modal-content">
+                <p class="eyebrow">GAME DETAILS</p>
+
+                <div class="modal-title-row">
+                    <h2 id="modalTitle"></h2>
+                    <button class="favorite-button" id="modalFavorite"
+                        onclick="toggleFavorite(currentGameId)">♡</button>
+                </div>
+
+                <p class="developer" id="modalDeveloper"></p>
+                <p class="objective" id="modalObjective"></p>
+
+                <div class="details-grid">
+                    <div><span>PLATFORM</span><strong id="modalPlatform"></strong></div>
+                    <div><span>RELEASE YEAR</span><strong id="modalRelease"></strong></div>
+                    <div><span>RATING</span><strong id="modalRating"></strong></div>
+                    <div><span>HOURS PLAYED</span><strong id="modalHours"></strong></div>
+                    <div><span>STATUS</span><strong id="modalStatus"></strong></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="primary-button" onclick="markPlayed(currentGameId)">
+                        ▶ Mark as Played
+                    </button>
+                    <button class="secondary-button" onclick="openFullDetails()">
+                        Full Details ↗
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FULL GAME DETAILS PAGE -->
+    <section class="full-details hidden" id="fullDetails">
+        <header class="details-topbar">
+            <button class="back-button" onclick="backToLibrary()">
+                ← Back to Library
+            </button>
+            <span>GAME PROFILE</span>
+        </header>
+
+        <div class="details-hero" id="detailsHero">
+            <div class="details-hero-content">
+                <p class="eyebrow">YOUR GAME PROFILE</p>
+                <h1 id="detailsTitle"></h1>
+                <p id="detailsSummary"></p>
+
+                <button class="primary-button" onclick="markPlayed(currentGameId)">
+                    ▶ Mark as Played
+                </button>
+
+                <button class="secondary-button" id="detailsFavorite"
+                    onclick="toggleFavorite(currentGameId)">
+                    ♡ Add to Favorites
+                </button>
+            </div>
+        </div>
+
+        <div class="details-columns">
+            <div class="details-panel">
+                <p class="eyebrow">ABOUT THIS GAME</p>
+                <h2>Objective</h2>
+                <p id="detailsObjective"></p>
+            </div>
+
+            <div class="details-panel">
+                <p class="eyebrow">YOUR RECORD</p>
+                <h2>Game Information</h2>
+
+                <div class="info-row"><span>Category</span><strong id="detailsCategory"></strong></div>
+                <div class="info-row"><span>Platform</span><strong id="detailsPlatform"></strong></div>
+                <div class="info-row"><span>Developer</span><strong id="detailsDeveloper"></strong></div>
+                <div class="info-row"><span>Release Year</span><strong id="detailsRelease"></strong></div>
+                <div class="info-row"><span>Rating</span><strong id="detailsRating"></strong></div>
+                <div class="info-row"><span>Hours Played</span><strong id="detailsHours"></strong></div>
+                <div class="info-row"><span>Status</span><strong id="detailsStatus"></strong></div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
